@@ -1,8 +1,13 @@
+-- Query to create the schema used for the project. Contains data scraped from the web and can be accessed by a user with a GUI.
+
+CREATE SCHEMA premdata;
 USE premdata;
 
 CREATE TABLE teams (
 	teamID INT NOT NULL AUTO_INCREMENT,
     teamName VARCHAR(100),
+    stadium VARCHAR(400),
+    website VARCHAR(500),
     
     PRIMARY KEY (teamID)
 );
@@ -37,8 +42,7 @@ CREATE TABLE matches (
     awayYellows INT,
     homeReds INT,
     awayReds INT,
-    winnerName VARCHAR(100),
-    winnerID INT NOT NULL,
+    result VARCHAR(1),
     matchDay DATE,
     season VARCHAR(10),
     seasonID INT NOT NULL,
@@ -47,8 +51,6 @@ CREATE TABLE matches (
     FOREIGN KEY(homeID)
 		REFERENCES teams(teamID),
 	FOREIGN KEY(awayID)
-		REFERENCES teams(teamID),
-	FOREIGN KEY(winnerID)
 		REFERENCES teams(teamID),
 	FOREIGN KEY(seasonID)
 		REFERENCES seasons(seasonID)
@@ -62,6 +64,7 @@ CREATE TABLE seasonstats (
     teamName VARCHAR(100),
     wins INT,
     losses INT,
+    draws INT,
     goals INT,
     yellowCards INT,
     redCards INT,
@@ -76,7 +79,8 @@ CREATE TABLE seasonstats (
     pensConceded INT,
     penGoalsConceded INT,
     fouls INT,
-    passes INT,
+    passesCompleted INT,
+    passesAttempted INT,
     corners INT,
     
     PRIMARY KEY (statID),
