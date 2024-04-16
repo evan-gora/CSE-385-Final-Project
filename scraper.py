@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import time
 import pandas as pd
 from pip._vendor import requests
+from IPython.display import display, HTML
 import mysql.connector 
 
 # A method that gets the second year of the season (ex. 2007-2008 will return 2008)
@@ -101,16 +102,29 @@ for seasonURL in seasonURLS:
                 name = getCurrName(teamLink)
             if (name not in uniqueTeams):
                 uniqueTeams.append(name)
+    # Avoid 429 Error
     time.sleep(5)
 
 # Retrive squad stats for each team from each season
 count = 0
 for season in seasonURLS:
+    print(season)
     seasonHTML = requests.get(season).text
-    statsTable = pd.read_html(StringIO(seasonHTML), match = "Regular season")
-    statsTable
+    soup = BeautifulSoup(seasonHTML, "html.parser")
+    # Make sure the table is in the HTML
+    if (not soup.findAll("Regular Season").isEmpty()):
+        regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season")
+    if (not soup.findAll("Regular Season").isEmpty()):
+        squadShooting = pd.read_html(StringIO(seasonHTML), match = "Squad Shooting")
+    if (not soup.findAll("Regular Season").isEmpty()):
+        squadPassing = pd.read_html(StringIO(seasonHTML), match = "Squad Passing")
+    if (not soup.findAll("Regular Season").isEmpty()):
+        passTypes = pd.read_html(StringIO(seasonHTML), match = "Squad Pass Types")
+    if (not soup.findAll("Regular Season").isEmpty()):
+        miscStats = pd.read_html(StringIO(seasonHTML), match = "Squad Miscellaneous Stats")
     count += 1
     print(count)
+    # Avoid 429 Error
     time.sleep(5)
     
 # Retrive match data for each team in each season
