@@ -102,31 +102,65 @@ for seasonURL in seasonURLS:
                 name = getCurrName(teamLink)
             if (name not in uniqueTeams):
                 uniqueTeams.append(name)
-    # Avoid 429 Error
-    time.sleep(5)
+    # Avoid 429 Error (Too Many Requests)
+    time.sleep(3)
 
 # Retrive squad stats for each team from each season
-count = 0
 for season in seasonURLS:
-    print(season)
     seasonHTML = requests.get(season).text
     soup = BeautifulSoup(seasonHTML, "html.parser")
-    # Make sure the table is in the HTML
-    if (not soup.findAll("Regular Season").isEmpty()):
-        regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season")
-    if (not soup.findAll("Regular Season").isEmpty()):
-        squadShooting = pd.read_html(StringIO(seasonHTML), match = "Squad Shooting")
-    if (not soup.findAll("Regular Season").isEmpty()):
+    # Generate tables for the necessary data
+    regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season")
+    squadShooting = pd.read_html(StringIO(seasonHTML), match = "Squad Shooting")
+    miscStats = pd.read_html(StringIO(seasonHTML), match = "Squad Miscellaneous Stats")
+    # Use try catch for passing tables because some seasons do not have passing data
+    try:
         squadPassing = pd.read_html(StringIO(seasonHTML), match = "Squad Passing")
-    if (not soup.findAll("Regular Season").isEmpty()):
+    except:
+        continue
+    try:
         passTypes = pd.read_html(StringIO(seasonHTML), match = "Squad Pass Types")
-    if (not soup.findAll("Regular Season").isEmpty()):
-        miscStats = pd.read_html(StringIO(seasonHTML), match = "Squad Miscellaneous Stats")
-    count += 1
-    print(count)
-    # Avoid 429 Error
-    time.sleep(5)
-    
+    except:
+        continue
+    # Avoid 429 Error (Too Many Requests)
+    time.sleep(3)
+
 # Retrive match data for each team in each season
-# for url in teamURLS:
+for url in teamURLS:
+    teamHTML = requests.get(url).text
+    soup = BeautifulSoup(teamHTML, "html.parser")
+    # Get the scores of each game played
+    matches = pd.read_html(StringIO(teamHTML), match = "Scores & Fixtures")
+    # Generate shooting, passing, possession, and misc HTML pages
+    # Some pages do not have passing or possession data
+    links = soup.findAll("a")
+    links = [link.get("href") for link in links]
+    shootingLinks = [link for link in links if link and "all_comps/shooting/" in link]
+    passingLinks = [link for link in links if link and "all_comps/passing_types/" in link]
+    possLinks = [link for link in links if link and "all_comps/possession/" in link]
+    miscLinks = [link for link in links if link and "all_comps/misc/" in link]
+    shootingURL = "https://fbref.com" + shootingLinks[0]
+    shootingHTML = requests.get(shootingURL).text
+    miscURL = "https://fbref.com" + miscLinks[0]
+    miscHTML = requests.get(shootingURL).text
+    shooting = pd.read_html(StringIO(shootingHTML), match = "Shooting")
+    misc = pd.read_html(StringIO(miscHTML), match = "2023-2024 Manchester City: All Competitions")
+    # Try to get passing and possession data
+    try:
+        passingURL = "https://fbref.com" + passingLinks[0]
+        passingHTML = requests.get(shootingURL).text
+        passing = pd.read_html(StringIO(passingHTML), match = "Pass Types")
+    except:
+        continue
+    try:
+        possURL = "https://fbref.com" + possLinks[0]
+        possHTML = requests.get(shootingURL).text
+        possession = pd.read_html(StringIO(possHTML), match = "Possession")
+    except:
+        continue
+    print("Tables Created")
+    print(misc)
+    break
+    # Avoid 429 Error (Too Many Requests)
+    time.sleep(1)
     
