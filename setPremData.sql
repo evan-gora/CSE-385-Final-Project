@@ -6,8 +6,6 @@ USE premdata;
 CREATE TABLE teams (
 	teamID INT NOT NULL AUTO_INCREMENT,
     teamName VARCHAR(100),
-    stadium VARCHAR(400),
-    website VARCHAR(500),
     
     PRIMARY KEY (teamID)
 );
@@ -15,37 +13,24 @@ CREATE TABLE teams (
 CREATE TABLE seasons (
 	seasonID INT NOT NULL AUTO_INCREMENT,
     season VARCHAR(10),
-    leagueWinner VARCHAR(100),
-    winnerID INT,
     
-    PRIMARY KEY (seasonID),
-    FOREIGN KEY(winnerID)
-		REFERENCES teams(teamID)
+    PRIMARY KEY (seasonID)
 );
 
 CREATE TABLE matches (
 	matchID INT NOT NULL AUTO_INCREMENT,
+    matchDay DATE,
+    season VARCHAR(10),
+    seasonID INT NOT NULL,
 	homeName VARCHAR(100),
     homeID INT NOT NULL,
     awayName VARCHAR(100),
     awayID INT NOT NULL,
-    location VARCHAR(200),
-    homeGoals INT NOT NULL,
+	homeGoals INT NOT NULL,
+    homeXG DECIMAL(2, 1),
     awayGoals INT NOT NULL,
-    homeShots INT,
-    awayShots INT,
-    homeTouches INT,
-    awayTouches INT,
-    homeCorners INT,
-    awayCorners INT,
-    homeYellows INT,
-    awayYellows INT,
-    homeReds INT,
-    awayReds INT,
-    result VARCHAR(1),
-    matchDay DATE,
-    season VARCHAR(10),
-    seasonID INT NOT NULL,
+    awayXG DECIMAL(2, 1),
+    location VARCHAR(200),
     
     PRIMARY KEY(matchID),
     FOREIGN KEY(homeID)
@@ -73,6 +58,7 @@ CREATE TABLE seasonstats (
     passesCompleted INT,
     passesAttempted INT,
     passCompPerc DECIMAL(2, 1),
+    corners INT,
     cleanSheets INT,
     goalsConceded INT,
     clearances INT,
@@ -81,7 +67,6 @@ CREATE TABLE seasonstats (
     fouls INT,
     yellowCards INT,
     redCards INT,
-    corners INT,
     
     PRIMARY KEY (statID),
     FOREIGN KEY (seasonID)
