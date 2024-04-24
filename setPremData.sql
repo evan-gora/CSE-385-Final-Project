@@ -44,10 +44,10 @@ CREATE TABLE matches (
 
 CREATE TABLE seasonstats (
 	statID INT NOT NULL AUTO_INCREMENT,
-    seasonID INT NOT NULL,
     season VARCHAR(10),
-    teamID INT NOT NULL,
+    seasonID INT,
     teamName VARCHAR(100),
+    teamID INT,
     points INT,
     wins INT,
     losses INT,
