@@ -80,8 +80,7 @@ for link in seasons:
 for i in range(len(seasonURLS)):
     seasonURLS[i] = "https://fbref.com" + seasonURLS[i]
 
-'''# Get links to every team that played each season.
-teamURLS = []
+
 # Stores unique team names
 uniqueTeams = []
 print("Generating URLs for Each Team in Each Season:")
@@ -108,17 +107,16 @@ for seasonURL in seasonURLS:
                 name = getCurrName(teamLink)
             if (name not in uniqueTeams):
                 uniqueTeams.append(name)
-            # Prevent duplicate links
-            if (teamLink not in teamURLS):
-                teamURLS.append(teamLink)
-                print("Added Link for " + name)
+                print("Added " + name + " to list of unique teams")
     # Avoid 429 Error (Too Many Requests)
     time.sleep(5)
-print("Team URLS Generated")'''
+print("List of Unique Teams Generated")
 
 # Retrive squad stats for each team from each season
 # Also generate match data from each season
 for season in seasonURLS:
+    # Boolean used for merging passing data
+    passing = False
     seasonHTML = requests.get(season).text
     soup = BeautifulSoup(seasonHTML, "html.parser")
     print(season)
@@ -131,16 +129,23 @@ for season in seasonURLS:
     # Use try catch for passing tables because some seasons do not have passing data
     try:
         squadPassing = pd.read_html(StringIO(seasonHTML), match = "Squad Passing")
+        passingAtt = squadPassing[['Cmp', 'Att', 'Cmp%']]
+        passing = True
     except:
         print("No Squad Passing Data for this Season")
     try:
         passTypes = pd.read_html(StringIO(seasonHTML), match = "Squad Pass Types")
+        passTypesFinal = passTypes[['CK']]
     except:
         print("No Squad Pass Types Data for this Season")
         
     print("Season Stats Completed")
     
     # TODO: MERGE TABLES AND ADD RELEVANT INFORMATION TO THE DATABASE
+    # Check if the season has passing data before merging passing tables
+    if (passing):
+        passingFinal = passingAtt.merge(passTypesFinal)
+        print(passingFinal)
     
     # Match Data for each season
     matches = soup.findAll("a")
@@ -157,77 +162,13 @@ for season in seasonURLS:
     print(matchURL)
         
     data = pd.read_html(StringIO(matchHTML), match = "Scores & Fixtures")
+    print(data)
     print("Match Data Completed")
     
     # TODO - Filter data and add to database
+    # Drop unnecessary columns from match data
+    data = data.drop(columns = ['Wk', 'Day', 'Time', 'Referee', 'Match Report', 'Notes'])
     
-    # Avoid 429 Error (Too Many Requests)
-    time.sleep(5)
-    
-# Retrive match data for each team in each season
-'''for url in teamURLS:
-    print(url)
-    teamHTML = requests.get(url).text
-    soup = BeautifulSoup(teamHTML, "html.parser")
-    
-    # Generate shooting, passing, possession, and misc HTML pages
-    # Some pages do not have passing or possession data
-    links = soup.findAll("a")
-    links = [link.get("href") for link in links]
-    matchesLinks = [link for link in links if link and "c9/schedule/" in link]
-    shootingLinks = [link for link in links if link and "c9/shooting/" in link]
-    passingLinks = [link for link in links if link and "c9/passing_types/" in link]
-    possLinks = [link for link in links if link and "c9/possession/" in link]
-    miscLinks = [link for link in links if link and "c9/misc/" in link]
-    
-    # Generate the URLs and HTML for match, shooting and misc stats
-    matchURL = "https://fbref.com" + matchesLinks[0]
-    print(matchURL)
-    matchHTML = requests.get(matchURL).text
-    shootingURL = "https://fbref.com" + shootingLinks[0]
-    print(shootingURL)
-    shootingHTML = requests.get(shootingURL).text
-    #miscURL = "https://fbref.com" + miscLinks[0]
-    #print(miscURL)
-    #miscHTML = requests.get(shootingURL).text
-    
-    # Create the tables
-    matches = pd.read_html(StringIO(matchHTML), match = "Scores & Fixtures")
-    shooting = pd.read_html(StringIO(shootingHTML), match = "Shooting")
-    print("Shooting table created")
-    # Get the season years and team name
-    endYear = int(miscURL[37:41])
-    season = str(endYear - 1) + "-" + str(endYear)
-    team = miscURL[72:]
-    # Get just the team name
-    team = team.replace("-Match-Logs-All-Competitions", "").replace("-", " ")
-    print(team)
-    # String for the match section of the misc table
-    check = season + " " + team + ": All Competitions"
-    #misc = pd.read_html(StringIO(miscHTML), match = "Miscellaneous Stats ")
-    #print(misc)
-    # Try to get passing and possession data - not available for some links
-    try:
-        passingURL = "https://fbref.com" + passingLinks[0]
-        print(passingURL)
-        passingHTML = requests.get(shootingURL).text
-        passing = pd.read_html(StringIO(passingHTML), match = "Pass Types")
-    except:
-        if(getSeasonYear(url) == 2024):
-            print("Passing data for " + getCurrName(url) + " for " + str(getSeasonYear(url) - 1) + "/" + str(getSeasonYear(url)) + " not found.")
-        else :
-            print("Passing data for " + getTeamName(url) + " for " + str(getSeasonYear(url) - 1) + "/" + str(getSeasonYear(url)) + " not found.")
-    try:
-        possURL = "https://fbref.com" + possLinks[0]
-        print(possURL)
-        possHTML = requests.get(shootingURL).text
-        possession = pd.read_html(StringIO(possHTML), match = "Possession")
-    except:
-        if(getSeasonYear(url) == 2024):
-            print("Possession data for " + getCurrName(url) + " for " + str(getSeasonYear(url) - 1) + "/" + str(getSeasonYear(url)) + " not found.")
-        else :
-            print("Possession data for " + getTeamName(url) + " for " + str(getSeasonYear(url) - 1) + "/" + str(getSeasonYear(url)) + " not found.")
     break
     # Avoid 429 Error (Too Many Requests)
-    time.sleep(1)'''
-    
+    time.sleep(5)
