@@ -1,5 +1,6 @@
 -- Query to create the schema used for the project. Contains data scraped from the web and can be accessed by a user with a GUI.
 
+DROP DATABASE premdata;
 CREATE SCHEMA premdata;
 USE premdata;
 
@@ -25,7 +26,7 @@ CREATE TABLE matches (
 	homeName VARCHAR(100),
     homeID INT NOT NULL,
     homeXG DECIMAL(2, 1),
-    score VARCHAR(5,)
+    score VARCHAR(5),
     awayXG DECIMAL(2, 1),
     awayName VARCHAR(100),
     awayID INT NOT NULL,
