@@ -31,7 +31,7 @@ CREATE TABLE matches (
     awayGoals INT NOT NULL,
     awayXG DECIMAL(2, 1),
     attendance DECIMAL(6, 1),
-    location VARCHAR(200),
+    location VARCHAR(50),
     
     PRIMARY KEY(matchID),
     FOREIGN KEY(homeID)
