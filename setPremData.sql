@@ -19,17 +19,16 @@ CREATE TABLE seasons (
 
 CREATE TABLE matches (
 	matchID INT NOT NULL AUTO_INCREMENT,
-    matchDay DATE,
     season VARCHAR(10),
     seasonID INT NOT NULL,
+    matchDay DATE,
 	homeName VARCHAR(100),
     homeID INT NOT NULL,
+    homeXG DECIMAL(2, 1),
+    score VARCHAR(5,)
+    awayXG DECIMAL(2, 1),
     awayName VARCHAR(100),
     awayID INT NOT NULL,
-	homeGoals INT NOT NULL,
-    homeXG DECIMAL(2, 1),
-    awayGoals INT NOT NULL,
-    awayXG DECIMAL(2, 1),
     attendance DECIMAL(6, 1),
     location VARCHAR(50),
     
