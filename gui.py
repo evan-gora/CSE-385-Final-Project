@@ -49,6 +49,9 @@ confirmBtn2 = QPushButton("Confirm")
 # Clear button to clear all filters
 clearBtn = QPushButton("Clear")
 
+# Label to test results layout
+resultsLabel = QLabel("Results")
+
 ### WIDGET FUNCTIONALITY ###
 
 
@@ -65,6 +68,9 @@ matchSelectionLayout.addWidget(diffLabel)
 teamSeasonLayout.addRow("Team: ", teamSelect)
 teamSeasonLayout.addRow("Season: ", seasonSelect)
 teamSeasonLayout.addWidget(confirmBtn2)
+
+# Add to results layout
+resultsLayout.addWidget(resultsLabel)
 
 # Add nested layouts
 mainLayout.addWidget(matchSelectLabel, 0, 0)
