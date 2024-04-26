@@ -6,6 +6,10 @@
 from PyQt5.QtWidgets import *
 import mysql.connector
 
+# Open the mySQL connection
+connection = mysql.connector.connect(user = "root", password = "m1923!Ac", host = "localhost", database = "premdata")
+cursor = connection.cursor()
+
 # Define functional methods.
 
 # Create the application, define a window, and define the main layout.
