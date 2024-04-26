@@ -21,7 +21,7 @@ CREATE TABLE seasons (
 CREATE TABLE matches (
 	matchID INT NOT NULL AUTO_INCREMENT,
     season VARCHAR(10),
-    seasonID INT,
+    matchseasonID INT,
     matchDay DATE,
 	homeName VARCHAR(100),
     homeID INT,
@@ -33,19 +33,13 @@ CREATE TABLE matches (
     attendance DECIMAL(6, 1),
     location VARCHAR(50),
     
-    PRIMARY KEY(matchID),
-    FOREIGN KEY(homeID)
-		REFERENCES teams(teamID),
-	FOREIGN KEY(awayID)
-		REFERENCES teams(teamID),
-	FOREIGN KEY(seasonID)
-		REFERENCES seasons(seasonID)
+    PRIMARY KEY(matchID)
 );
 
 CREATE TABLE seasonstats (
 	statID INT NOT NULL AUTO_INCREMENT,
     season VARCHAR(10),
-    seasonID INT,
+    statseasonID INT,
     teamName VARCHAR(100),
     teamID INT,
     points INT,
@@ -68,9 +62,5 @@ CREATE TABLE seasonstats (
     yellowCards INT,
     redCards INT,
     
-    PRIMARY KEY (statID),
-    FOREIGN KEY (seasonID)
-		REFERENCES seasons(seasonID),
-	FOREIGN KEY (teamID)
-		REFERENCES teams(teamID)
+    PRIMARY KEY (statID)
 );
