@@ -4,6 +4,8 @@
 # Scrapes for data such as season year, team name, home stadium, match data (W/L/D, GF, GA, yCards, rCards, etc.),
 # and season data(total wins, losses, draws, GF, GA, etc.)
 #
+# Not optimized
+#
 # Author: Evan Gora
 
 from io import StringIO
@@ -173,13 +175,13 @@ for season in seasonURLS:
     
     # Populate array of length len(seasonStats) with the current season so that the seasons column can be populated
     seasonStatsYrs = []
-    #seasonIDs = []
+    seasonIDs = []
     for i in range(0, len(seasonStats)):
         seasonStatsYrs.append(seasonYr)
-        #seasonIDs.append(seasonYrs.index(seasonYr) + 1)
+        seasonIDs.append(seasonYrs.index(seasonYr) + 1)
     # Add the column to the table
     seasonStats.insert(0, "season", seasonStatsYrs, True)
-    #seasonStats.insert(1, "seasonID", seasonIDs, True)
+    seasonStats.insert(1, "statseasonID", seasonIDs, True)
     
     # Rename columns to match database
     if (missing):
@@ -196,9 +198,10 @@ for season in seasonURLS:
     print("Season Stats Completed")
     
     # Find the unique teams from each season
-    print("Finding unique teams for this season")
-    teamsSeries = seasonStats['teamName']
-    teams = teamsSeries.values
+    # Also find the ID for the the team
+    print("Finding unique teams for this season and assigning IDs")
+    teamIDs = []
+    teams = seasonStats['teamName'].values
     for team in teams:
         if (team not in uniqueTeams):
             uniqueTeams.append(team)
@@ -207,6 +210,14 @@ for season in seasonURLS:
             cursor.execute(sql, (team,))
             connection.commit()
             print("Added " + team + " to mySQL database")
+        indx = uniqueTeams.index(team) + 1
+        print(indx)
+        for i in range(0, len(seasonStats)):
+            print(teams[i])
+            if (teams[i] == uniqueTeams[indx - 1]):
+                teamIDs.append(indx)
+    # Add the teamIDs to the table
+    seasonStats.insert(3, "teamID", teamIDs, False)
     
     # Add seasonStats table to database
     print("Adding season stats to database")
@@ -234,12 +245,34 @@ for season in seasonURLS:
     # Drop unnecessary columns from match data
     data = data.drop(columns = ['Wk', 'Day', 'Time', 'Referee', 'Match Report', 'Notes'], axis = 1)
     
-    # Populate array of length len(data) with the current season to add a season column to the data
+    # Add season years and season IDs to the table
     matchSeason = []
+    seasonIDs = []
     for i in range(0, len(data)):
         matchSeason.append(seasonYr)
+        seasonIDs.append(seasonYrs.index(seasonYr) + 1)
     # Add the column to the table
     data.insert(0, "season", matchSeason, True)
+    data.insert(1, "matchseasonID", seasonIDs, True)
+    
+    # Add home and away team IDs
+    homeIDs = []
+    awayIDs = []
+    homeTeams = data["Home"].values
+    awayTeams = data["Away"].values
+    for i in range(0, len(data)):
+        # Make sure the match has teams
+        if (homeTeams[i] in uniqueTeams):
+            homeID = uniqueTeams.index(homeTeams[i]) + 1
+            homeIDs.append(homeID)
+            awayID = uniqueTeams.index(awayTeams[i]) + 1
+            awayIDs.append(awayID)
+        else:
+            homeIDs.append(None)
+            awayIDs.append(None)
+    # Add the columns to the table
+    data.insert(4, "homeID", homeIDs, True)
+    data.insert(9, "awayID", awayIDs, True)
     
     # Rename columns to match the database
     # Check for missing data
