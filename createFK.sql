@@ -3,10 +3,16 @@
 USE premdata;
 
 -- Update foreign keys in the season stats table
-INSERT INTO seasonstats 
-SET seasonID = (SELECT seasonID FROM seasons WHERE season = seasonstats.season);
-INSERT INTO seasonstats(teamID) VALUES ((SELECT teamID FROM teams WHERE teamName = seasonstats.teamName));
+ALTER TABLE seasonstats
+	ADD CONSTRAINT fk_seasonstat_id FOREIGN KEY (statseasonID) 
+    REFERENCES seasons(seasonID),
+    ADD CONSTRAINT fk_team_id FOREIGN KEY (teamID)
+    REFERENCES teams(teamID);
 -- Update foreign keys in the matches table
-INSERT INTO matches(seasonID) VALUES ((SELECT seasonID FROM seasons WHERE season = matches.season));
-INSERT INTO matches(homeID) VALUES ((SELECT teamID FROM teams WHERE teamName = matches.homeName));
-INSERT INTO matches(awayID) VALUES ((SELECT teamID FROM teams WHERE teamName = matches.awayName));
+ALTER TABLE matches
+	ADD CONSTRAINT fk_matchseason_id FOREIGN KEY (matchseasonID) 
+    REFERENCES seasons(seasonID),
+    ADD CONSTRAINT fk_home_id FOREIGN KEY (homeID) 
+    REFERENCES teams(teamID),
+    ADD CONSTRAINT fk_away_id FOREIGN KEY (awayID)
+    REFERENCES teams(teamID);
