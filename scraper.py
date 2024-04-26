@@ -1,5 +1,5 @@
 # Program for a web scraper that scrapes data from fbref.com. Takes data from every premier
-# league season starting in 2007/2008 and uploads it to a locally hosted mySQL database. 
+# league season starting in 1992 and uploads it to a locally hosted mySQL database. 
 #
 # Scrapes for data such as season year, team name, home stadium, match data (W/L/D, GF, GA, yCards, rCards, etc.),
 # and season data(total wins, losses, draws, GF, GA, etc.)
@@ -73,7 +73,7 @@ for link in seasons:
             seasonURLS.append(link)
             seasonYrs.append(CURRENT_SEASON)
             print("Link for 2023/2024 Generated")
-    elif (getSeasonYear(link, 17, 21) > 2007):
+    elif (getSeasonYear(link, 17, 21) > 1992):
         if (link not in seasonURLS):
             seasonURLS.append(link)
             # Set the season years and store it
@@ -96,46 +96,9 @@ print("Seasons added to database")
 for i in range(len(seasonURLS)):
     seasonURLS[i] = "https://fbref.com" + seasonURLS[i]
 
-# Stores unique team names
-uniqueTeams = []
-print("Generating List of Unique Teams:")
-for seasonURL in seasonURLS:
-    # Open the link and parse the HTML
-    seasonHTML = urlopen(seasonURL)
-    soup = BeautifulSoup(seasonHTML, "html.parser")
-    # Get each team link for the specific season
-    teams = soup.findAll("a")
-    teams = [link.get("href") for link in teams]
-    # Make sure all links are of type string
-    teams = [link for link in teams if type(link) == str]
-    # Get the links for each team
-    teams = [link for link in teams if '/squads/' in link]
-    for teamLink in teams:
-        teamLink = "https://fbref.com" + teamLink
-        if (teamLink[37:39] == "20" or getCurrName(teamLink) in CURRENT_TEAMS):
-            # Add the team name to the unique list if not already in it
-            name = ""
-            # Check if the team is a past or current team
-            if (teamLink[37:39] == "20"):
-                name = getTeamName(teamLink)
-            else:
-                name = getCurrName(teamLink)
-            if (name not in uniqueTeams):
-                uniqueTeams.append(name)
-                print("Added " + name + " to list of unique teams")
-    # Avoid 429 Error (Too Many Requests)
-    time.sleep(1)
-print("List of Unique Teams Generated")
-    
-# Add each unique team to the database
-for team in uniqueTeams:
-    sql = "INSERT INTO teams (teamName) VALUES (%s)"
-    cursor.execute(sql, (team,))
-    connection.commit()
-print("Added unique teams to MySQL database")
-
 # Array to store each unique team
 uniqueTeams = []
+#seasonYrs = []
 # Retrive squad stats for each team from each season
 # Also generate match data from each season
 for season in seasonURLS:
@@ -151,9 +114,11 @@ for season in seasonURLS:
         seasonEnd = seasonStart + 1
         seasonYr = str(seasonStart) + "/" + str(seasonEnd)
     except:
-        seasonYr = "2023/2024"
+        seasonYr = CURRENT_SEASON
+    #seasonYrs.append(seasonYr)
     
     # Generate tables for the necessary data
+    print("Generating Season Stats")
     regSeason = pd.read_html(StringIO(seasonHTML), match = "Regular season Table")
     regSeason = regSeason[0]
     squadShooting = pd.read_html(StringIO(seasonHTML), match = "Squad Shooting")
@@ -208,10 +173,13 @@ for season in seasonURLS:
     
     # Populate array of length len(seasonStats) with the current season so that the seasons column can be populated
     seasonStatsYrs = []
+    #seasonIDs = []
     for i in range(0, len(seasonStats)):
         seasonStatsYrs.append(seasonYr)
+        #seasonIDs.append(seasonYrs.index(seasonYr) + 1)
     # Add the column to the table
     seasonStats.insert(0, "season", seasonStatsYrs, True)
+    #seasonStats.insert(1, "seasonID", seasonIDs, True)
     
     # Rename columns to match database
     if (missing):
@@ -227,12 +195,26 @@ for season in seasonURLS:
                                                     'Fls': 'fouls', 'CrdY': 'yellowCards', 'CrdR': 'redCards'})
     print("Season Stats Completed")
     
+    # Find the unique teams from each season
+    print("Finding unique teams for this season")
+    teamsSeries = seasonStats['teamName']
+    teams = teamsSeries.values
+    for team in teams:
+        if (team not in uniqueTeams):
+            uniqueTeams.append(team)
+            print("Added " + team + " to list of unique teams")
+            sql = "INSERT INTO teams(teamName) VALUES (%s)"
+            cursor.execute(sql, (team,))
+            connection.commit()
+            print("Added " + team + " to mySQL database")
+    
     # Add seasonStats table to database
     print("Adding season stats to database")
     seasonStats.to_sql("seasonstats", con = engine, if_exists = 'append', index = False)
     print("Season stats added to database")
     
     # Match Data for each season
+    print("Generating match data")
     matches = soup.findAll("a")
     matches = [link.get("href") for link in matches]
     # Make sure all links are string
@@ -276,7 +258,7 @@ for season in seasonURLS:
     print("Match data added to databse")
     
     # Avoid 429 Error (Too Many Requests)
-    time.sleep(1)
+    time.sleep(3)
 
 # Close the connection
 print("Closing database connection")
