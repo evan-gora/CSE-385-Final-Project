@@ -8,6 +8,7 @@
 #
 # Author: Evan Gora
 
+import math
 from io import StringIO
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
@@ -211,9 +212,7 @@ for season in seasonURLS:
             connection.commit()
             print("Added " + team + " to mySQL database")
         indx = uniqueTeams.index(team) + 1
-        print(indx)
         for i in range(0, len(seasonStats)):
-            print(teams[i])
             if (teams[i] == uniqueTeams[indx - 1]):
                 teamIDs.append(indx)
     # Add the teamIDs to the table
@@ -274,15 +273,36 @@ for season in seasonURLS:
     data.insert(4, "homeID", homeIDs, True)
     data.insert(9, "awayID", awayIDs, True)
     
+    # Filter the score into home and away goals and add to their own columns. 
+    homeGoals = []
+    awayGoals = []
+    scores = data["Score"].values
+    for score in scores:
+        # Make sure the score is not float (nan)
+        if (not isinstance(score, float)):
+            # Split the score by the '-' character. Gives an array containing home goals and away goals
+            # Website uses a special character, not the common '-' character.
+            matchGoals = score.split('–')
+            # Append to the respective arrays
+            homeGoals.append(int(matchGoals[0]))
+            awayGoals.append(int(matchGoals[1]))
+        else:
+            homeGoals.append(None)
+            awayGoals.append(None)
+    # Add the goals columns
+    data.insert(7, "homeGoals", homeGoals, True)
+    data.insert(9, "awayGoals", awayGoals, True)
+    # Drop the score column
+    data = data.drop(columns=["Score"], axis = 1)
+    
     # Rename columns to match the database
     # Check for missing data
     if (missing):
-        data = data.rename(columns = {'Date': 'matchDay', 'Home': 'homeName', 'Score': 'score', 
-                                      'Away': 'awayName', 'Attendance': 'attendance', 'Venue': 'location'})
+        data = data.rename(columns = {'Date': 'matchDay', 'Home': 'homeName', 'Away': 'awayName', 
+                                      'Attendance': 'attendance', 'Venue': 'location'})
     else:
-        data = data.rename(columns = {'Date': 'matchDay', 'Home': 'homeName', 'xG': 'homeXG', 'Score': 'score', 
-                                      'xG.1': 'awayXG', 'Away': 'awayName', 'Attendance': 'attendance', 'Venue': 'location'})
-    
+        data = data.rename(columns = {'Date': 'matchDay', 'Home': 'homeName', 'xG': 'homeXG', 'xG.1': 'awayXG', 
+                                      'Away': 'awayName', 'Attendance': 'attendance', 'Venue': 'location'})
     print("Match Data Completed")
     
     # Add match data to the database
