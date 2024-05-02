@@ -16,3 +16,6 @@ ALTER TABLE matches
     REFERENCES teams(teamID),
     ADD CONSTRAINT fk_away_id FOREIGN KEY (awayID)
     REFERENCES teams(teamID);
+-- Clear all matches that have all null values
+DELETE FROM matches
+	WHERE homeID IS NULL;
