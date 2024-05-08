@@ -81,3 +81,17 @@ CREATE TABLE seasonstats (
     
     PRIMARY KEY (statID)
 );
+
+CREATE TABLE testStandings (
+	standingID INT NOT NULL AUTO_INCREMENT,
+    teamName VARCHAR(50),
+    testteamID INT,
+    points INT,
+    wins INT,
+    losses INT,
+    draws INT,
+    goals INT,
+    goalsConceded INT,
+    
+    PRIMARY KEY (standingID)
+);
