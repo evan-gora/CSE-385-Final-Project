@@ -37,6 +37,22 @@ CREATE TABLE matches (
     PRIMARY KEY(matchID)
 );
 
+CREATE TABLE upcomingMatches (
+	upcomingID INT NOT NULL AUTO_INCREMENT,
+    season VARCHAR(10),
+    upcomingseasonID INT,
+    matchDay DATE,
+    homeName VARCHAR(100),
+    upcominghomeID INT,
+    homeGoals INT,
+    awayGoals INT,
+    awayName VARCHAR(100),
+    upcomingawayID INT,
+    location VARCHAR(50),
+    
+    PRIMARY KEY(upcomingID)
+);
+
 CREATE TABLE seasonstats (
 	statID INT NOT NULL AUTO_INCREMENT,
     season VARCHAR(10),
