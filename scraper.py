@@ -310,8 +310,14 @@ for season in seasonURLS:
     data.to_sql("matches", con = engine, if_exists = 'append', index = False)
     print("Match data added to databse")
     
+    if (seasonYr == CURRENT_SEASON):
+        data = data.rename(columns = {'matchseasonID' : 'upcomingseasonID', 'homeID' : 'upcominghomeID', 'awayID' : 'upcomingawayID'})
+        data = data.drop(columns = ['homeXG', 'awayXG', 'attendance'])
+        data.to_sql("upcomingMatches", con = engine, if_exists = 'append', index = False)
+    
     # Avoid 429 Error (Too Many Requests)
     time.sleep(3)
+    
 
 # Close the connection
 print("Closing database connection")
