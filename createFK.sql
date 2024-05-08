@@ -24,6 +24,10 @@ ALTER TABLE upcomingMatches
     REFERENCES teams(teamID),
     ADD CONSTRAINT fk_upcomingaway_id FOREIGN KEY (upcomingawayID)
     REFERENCES teams(teamID);
+-- Update foreign key for team in testStandings table
+ALTER TABLE testStandings
+	ADD CONSTRAINT fk_testteam_id FOREIGN KEY (testteamID)
+    REFERENCES teams(teamID);
 -- Clear all matches that have all null values and all upcoming matches
 DELETE FROM matches
 	WHERE homeID IS NULL
