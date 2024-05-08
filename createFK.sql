@@ -16,6 +16,22 @@ ALTER TABLE matches
     REFERENCES teams(teamID),
     ADD CONSTRAINT fk_away_id FOREIGN KEY (awayID)
     REFERENCES teams(teamID);
--- Clear all matches that have all null values
+-- Update foreign keys in the upcoming matches table
+ALTER TABLE upcomingMatches
+	ADD CONSTRAINT fk_upcomingseason_id FOREIGN KEY (upcomingseasonID)
+    REFERENCES seasons(seasonID),
+    ADD CONSTRAINT fk_upcominghome_id FOREIGN KEY (upcominghomeID)
+    REFERENCES teams(teamID),
+    ADD CONSTRAINT fk_upcomingaway_id FOREIGN KEY (upcomingawayID)
+    REFERENCES teams(teamID);
+-- Clear all matches that have all null values and all upcoming matches
 DELETE FROM matches
-	WHERE homeID IS NULL;
+	WHERE homeID IS NULL
+    AND homeGoals IS NULL;
+-- Clear all non-upcoming matches from the upcoming table
+DELETE FROM upcomingMatches
+	WHERE homeGoals IS NOT NULL
+    AND upcominghomeID IS NOT NULL;
+-- Clear all matches that have all null values
+DELETE FROM upcomingMatches
+	WHERE upcominghomeID IS NULL;
