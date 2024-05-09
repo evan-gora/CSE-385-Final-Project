@@ -223,6 +223,7 @@ for season in seasonURLS:
     seasonStats.to_sql("seasonstats", con = engine, if_exists = 'append', index = False)
     print("Season stats added to database")
     
+    
     # Match Data for each season
     print("Generating match data")
     matches = soup.findAll("a")
@@ -311,6 +312,11 @@ for season in seasonURLS:
     print("Match data added to databse")
     
     if (seasonYr == CURRENT_SEASON):
+        # Add to the testStandings table
+        testStandings = seasonStats[['teamName', 'teamID', 'points', 'wins', 'losses', 'draws', 'goals', 'goalsConceded']]
+        testStandings = testStandings.rename(columns = {'teamID' : 'testteamID'})
+        testStandings.to_sql("testStandings", con = engine, if_exists = 'append', index = False)
+        # Add to the upcoming matches table
         data = data.rename(columns = {'matchseasonID' : 'upcomingseasonID', 'homeID' : 'upcominghomeID', 'awayID' : 'upcomingawayID'})
         data = data.drop(columns = ['homeXG', 'awayXG', 'attendance'])
         data.to_sql("upcomingMatches", con = engine, if_exists = 'append', index = False)
