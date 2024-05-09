@@ -30,8 +30,7 @@ ALTER TABLE testStandings
     REFERENCES teams(teamID);
 -- Clear all matches that have all null values and all upcoming matches
 DELETE FROM matches
-	WHERE homeID IS NULL
-    AND homeGoals IS NULL;
+	WHERE homeID IS NULL;
 -- Clear all non-upcoming matches from the upcoming table
 DELETE FROM upcomingMatches
 	WHERE homeGoals IS NOT NULL
