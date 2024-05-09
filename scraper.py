@@ -322,7 +322,7 @@ for season in seasonURLS:
         data.to_sql("upcomingMatches", con = engine, if_exists = 'append', index = False)
     
     # Avoid 429 Error (Too Many Requests)
-    time.sleep(3)
+    time.sleep(3) 
     
 
 # Close the connection
