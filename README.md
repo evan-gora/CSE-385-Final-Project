@@ -1,7 +1,7 @@
 # About the Project
 
 This repository contains all files for my CSE 385 - Database Systems - final project. The requirements for this project are as follows: Use a database, either downloaded or
-self-generated, and create a GUI to allow a user to view, filter, and modify the data.
+self-generated, and create a GUI to allow a user to view, filter, and modify the data. For more information on the project requirement, view the 'FinalProjectDetails' pdf in the project files. You can also find installation instructions in the 'Documentation' pdf.
 
 # The data
 
@@ -14,8 +14,9 @@ and a copy of the current team stats. I also created tables assigned each team a
 For data viewing, I simply use the matches table and seasonstats table and allow the user to filter by different teams and seasons. For the data editing portion of the project, I use
 the upcoming matches table and copy of the current season standings. There is a button that takes the user to upcoming matches and displayed both all upcoming matches as well as the
 current season table. When the user tests different scores in the upcoming matches table and presses the "Save Changes" button, the current season table is updated to display how the
-result of the game affects the table. The user also has the ability to reset the tables to set all scores back to 0-0 and set the table back to how it currently stands.
+result of the game affects the table. The user also has the ability to reset the tables to set all scores back to 0-0 and set the table back to how it currently stands. For more information on how the GUI works, view the 'Documentation' pdf or the video demo of the project.
 
 # Languages and Technologies
 
-The scraper is written in python, with the GUI itself being written using Java Swing graphics. The database queries and database are stored locally in mySQL workbench.
+The scraper is written in python, with the GUI itself being written using Java Swing graphics. The database queries and database are stored locally in mySQL workbench. For references to
+external libraries used, view the 'Documentation' pdf in the project files.
