@@ -8,7 +8,6 @@
 #
 # Author: Evan Gora
 
-import math
 from io import StringIO
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
