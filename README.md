@@ -1,7 +1,7 @@
 # About the Project
 
 This repository contains all files for my CSE 385 - Database Systems - final project. The requirements for this project are as follows: Use a database, either downloaded or
-self-generated, and create a GUI to allow a user to view, filter, and modify the data. For more information on the project requirement, view the 'FinalProjectDetails' pdf in the project files. You can also find installation instructions in the 'Documentation' pdf.
+self-generated, and create a GUI to allow a user to view, filter, and modify the data. This project is more about demonstration of an understanding of SQL and handling data, and not as much about the User Interface. For more information on the project requirement, view the 'FinalProjectDetails' pdf in the project files. You can also find installation instructions in the 'Documentation' pdf. 
 
 # The data
 
